@@ -180,7 +180,7 @@ def generate_reply(ollama_client, model, buddy, message):
         conversations[buddy] = [""]
 
     if (buddy == "nodemixaholic" or buddy == "sparksammy"):
-        buddyName = `Sammy Lord (Username: ${buddy})`
+        buddyName = f"Sammy Lord (Username: ${buddy})"
 
     # Append the incoming user message.
     conversations[buddy].append({"role": "user", "content": f"""Reminders: ${BOT_INITIAL_REMINDERS}
