@@ -227,7 +227,8 @@ async def message_received(sender, message):
         return
 
     # 3. Otherwise, generate an AI reply via Ollama.
-    console.print(f"[dim][{time_str}][/] [bold yellow]Samantha is thinking...[/]")
+    console.print(f"[dim][{time_str}][/] [bold yellow]Samantha is thinking about his reply, please wait...[/]")
+    await current_client.send_message(sender, "Samantha is thinking about his reply, please wait...")
     loop = asyncio.get_event_loop()
     reply = await loop.run_in_executor(
         None, generate_reply, ollama_client, model, sender, message
