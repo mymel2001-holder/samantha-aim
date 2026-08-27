@@ -182,7 +182,7 @@ def generate_reply(ollama_client, model, buddy, message):
     if (buddy == "nodemixaholic" or buddy == "sparksammy"):
         buddyName = f"Sammy Lord (Username: ${buddy})"
 
-    let botMessage = f"""Reminders: ${BOT_INITIAL_REMINDERS}
+    botMessage = f"""Reminders: ${BOT_INITIAL_REMINDERS}
     Reply to the following message 
     from ${buddyName}: ${message}"""
     # Append the incoming user message.
