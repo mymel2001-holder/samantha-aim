@@ -179,7 +179,7 @@ def generate_reply(ollama_client, model, buddy, message):
     if buddy not in conversations:
         conversations[buddy] = [""]
 
-    if (buddy == "nodemixaholic" || buddy == "sparksammy") {
+    if (buddy == "nodemixaholic" or buddy == "sparksammy") {
         buddyName = `Sammy Lord (Username: ${buddy})`
     }
 
