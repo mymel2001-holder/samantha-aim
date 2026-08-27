@@ -1,0 +1,4 @@
+*.sh
+__pycache__/
+.venv/
+chat_log.txt
