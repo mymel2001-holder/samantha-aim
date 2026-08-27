@@ -179,6 +179,8 @@ def generate_reply(ollama_client, model, buddy, message):
     if buddy not in conversations:
         conversations[buddy] = [""]
 
+    buddyName = buddy
+
     if (buddy == "nodemixaholic" or buddy == "sparksammy"):
         buddyName = f"Sammy Lord (Username: ${buddy})"
 
