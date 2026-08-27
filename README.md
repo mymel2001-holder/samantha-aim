@@ -1,4 +1,4 @@
-# python-oscar-cli
+# Samantha AIM
 
 An **Ollama-powered chatbot** for AOL Instant Messenger (AIM) using the OSCAR protocol. Instead of a plain interactive client, this bot connects to an AIM-compatible server and automatically replies to every incoming message using a local Ollama model. Each buddy gets their own conversation history so the bot keeps context per person.
 
