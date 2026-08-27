@@ -162,6 +162,9 @@ def sanitize_message(text):
     and the server actually delivers the message.
     """
     for emoji, emoticon in EMOJI_MAP.items():
+        # BUGFIX: Undefined emoticons should appear as unicode spaces.
+        if emoticon = "":
+            emoticon = " "
         text = text.replace(emoji, emoticon)
     return text.encode("ascii", "ignore").decode("ascii")
 
