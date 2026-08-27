@@ -182,10 +182,11 @@ def generate_reply(ollama_client, model, buddy, message):
     if (buddy == "nodemixaholic" or buddy == "sparksammy"):
         buddyName = f"Sammy Lord (Username: ${buddy})"
 
-    # Append the incoming user message.
-    conversations[buddy].append({"role": "user", "content": f"""Reminders: ${BOT_INITIAL_REMINDERS}
+    let botMessage = f"""Reminders: ${BOT_INITIAL_REMINDERS}
     Reply to the following message 
-    from ${buddyName}: ${message}"""})
+    from ${buddyName}: ${message}"""
+    # Append the incoming user message.
+    conversations[buddy].append({"role": "user", "content": botMessage})
 
     # Trim history to the most recent MAX_HISTORY messages (keep system prompt).
     history = conversations[buddy]
