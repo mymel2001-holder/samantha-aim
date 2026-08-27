@@ -125,11 +125,6 @@ async def message_received(sender, message):
     console.print(f"[dim][{time_str}][/] [bold cyan]Samantha to {sender}:[/] {reply}")
 
 
-async def get_input():
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, sys.stdin.readline)
-
-
 async def main(args):
     global is_away, away_message, responded_buddies, current_client, ollama_client, model
     from aimpyfly import aim_client
@@ -149,64 +144,19 @@ async def main(args):
         await current_client.connect()
         console.print(
             f"[bold blue]Connected![/] Ollama model: [bold]{model}[/]. "
-            "Commands: /away <msg> , /back , /reset , /model <name> , /quit"
+            "Waiting for incoming messages..."
         )
     except Exception as e:
         console.print(f"[bold red]Connection failed: {e}[/]")
         return
 
-    processing_task = asyncio.create_task(current_client.process_incoming_packets())
-
-    while not processing_task.done():
-        try:
-            sys.stdout.write("> ")
-            sys.stdout.flush()
-
-            line = await get_input()
-            if not line:
-                break
-            cmd = line.strip()
-            if not cmd:
-                continue
-
-            # Reset Away Status if the user sends ANY manual message
-            if is_away and not cmd.startswith("/"):
-                is_away = False
-                responded_buddies.clear()
-                console.print("[bold green]Welcome back! Auto-responder disabled.[/]")
-
-            if cmd.lower() == "/quit":
-                break
-
-            elif cmd.lower().startswith("/away "):
-                away_message = cmd[6:].strip()
-                is_away = True
-                responded_buddies.clear()
-                console.print(f"[bold yellow]Away status active:[/] {away_message}")
-
-            elif cmd.lower() == "/back":
-                is_away = False
-                responded_buddies.clear()
-                console.print("[bold green]Auto-responder disabled.[/]")
-
-            elif cmd.lower() == "/reset":
-                conversations.clear()
-                console.print("[bold green]Conversation history cleared for all buddies.[/]")
-
-            elif cmd.lower().startswith("/model "):
-                model = cmd[7:].strip()
-                console.print(f"[bold yellow]Switched model to:[/] {model}")
-
-            else:
-                console.print(
-                    "[red]Commands: /away <msg> , /back , /reset , /model <name> , /quit[/]"
-                )
-
-        except Exception as e:
-            break
-
-    processing_task.cancel()
-    console.print("\n[blue]Disconnected.[/]")
+    # Run the packet-processing loop until the connection drops.
+    try:
+        await current_client.process_incoming_packets()
+    except Exception as e:
+        console.print(f"[bold red]Connection error: {e}[/]")
+    finally:
+        console.print("\n[blue]Disconnected.[/]")
 
 
 if __name__ == "__main__":

@@ -7,12 +7,7 @@ An **Ollama-powered chatbot** for AOL Instant Messenger (AIM) using the OSCAR pr
 - Connect to an AIM server with username and password.
 - Automatically reply to incoming messages using a local **Ollama** model.
 - Per-buddy conversation history for context-aware replies.
-- Set away status with custom auto-reply: `/away <message>`.
-- Auto-reply to incoming messages when away, with a 5-minute cooldown per buddy to avoid spamming.
-- Disable away status: `/back`.
-- Clear all conversation history: `/reset`.
-- Switch the active Ollama model on the fly: `/model <name>`.
-- Quit the session: `/quit`.
+- Runs autonomously with no interactive prompt—just listens and responds.
 - Chat logging to `chat_log.txt` with timestamps.
 - Colorful console output using the `rich` library.
 
@@ -65,13 +60,7 @@ oscar-client.py [-h] --server SERVER [--port PORT] --username USERNAME --passwor
   --model llama3.2
 ```
 
-Once connected, the bot automatically replies to every incoming message using the configured Ollama model. A `>` prompt is available for admin commands:
-
-- Set away: `/away Out for lunch`
-- Return: `/back`
-- Clear history: `/reset`
-- Switch model: `/model llama3.1`
-- Quit: `/quit`
+Once connected, the bot runs autonomously and automatically replies to every incoming message using the configured Ollama model. There is no interactive prompt—the bot simply listens for messages and responds until the connection drops (use Ctrl+C to stop it).
 
 Incoming messages and AI replies are displayed in real-time with timestamps. Chats are logged to `chat_log.txt`.
 
@@ -80,7 +69,7 @@ Incoming messages and AI replies are displayed in real-time with timestamps. Cha
 - The auto-reply feature only triggers if you're away and hasn't replied to that buddy within the last 5 minutes.
 - Logs are appended to `chat_log.txt` in the current directory.
 - Error handling is basic; connection failures are displayed in the console.
-- This is a stateful CLI session—use Ctrl+C to exit if needed.
+- The bot runs as a long-lived daemon—use Ctrl+C to stop it.
 
 ## Contributing
 
