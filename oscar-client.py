@@ -37,11 +37,12 @@ conversations = {}
 # Maximum number of messages to keep in history per buddy
 MAX_HISTORY = 20
 
-# Default system prompt giving the bot a persona.
+# Default system prompt giving the bot a persona. (must always end in " ")
 BOT_INITIAL_REMINDERS = (
     "* You are Samantha, a friendly and helpful AI assistant chatting over "
     "* AOL Instant Messenger. Keep replies concise, warm, and conversational. "
     "* Stay in character and never mention that you are an AI model."
+    " "
 )
 
 
@@ -186,11 +187,7 @@ def generate_reply(ollama_client, model, buddy, message):
         conversations[buddy] = [""]
 
     # Append the incoming user message.
-    conversations[buddy].append({"role": "user", "content": `Reminders:
-    ${BOT_INITIAL_REMINDERS}
-
-    Reply to the following message from ${buddyName}:
-    ${message}`)
+    conversations[buddy].append({"role": "user", "content": `Reminders: ${BOT_INITIAL_REMINDERS} Reply to the following message from ${buddyName}: ${message}`)
 
     # Trim history to the most recent MAX_HISTORY messages (keep system prompt).
     history = conversations[buddy]
