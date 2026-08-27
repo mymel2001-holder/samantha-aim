@@ -175,22 +175,23 @@ def get_ollama_client(endpoint):
 
 def generate_reply(ollama_client, model, buddy, message):
     """Generate a reply for a buddy using the configured Ollama model."""
-    # Seed the conversation with the system prompt if it's new.
+    # Start a fresh, empty history if this buddy is new. We don't set a system
+    # message here so the model's own built-in system prompt is preserved.
     if buddy not in conversations:
-        conversations[buddy] = [""]
+        conversations[buddy] = []
 
     buddyName = buddy
 
     if (buddy == "nodemixaholic" or buddy == "sparksammy"):
-        buddyName = f"Sammy Lord (Username: ${buddy})"
+        buddyName = f"Sammy Lord (Username: {buddy})"
 
-    botMessage = f"""Reminders: ${BOT_INITIAL_REMINDERS}
-    Reply to the following message 
-    from ${buddyName}: ${message}"""
+    botMessage = f"""Reminders: {BOT_INITIAL_REMINDERS}
+    Reply to the following message
+    from {buddyName}: {message}"""
     # Append the incoming user message.
     conversations[buddy].append({"role": "user", "content": botMessage})
 
-    # Trim history to the most recent MAX_HISTORY messages (keep system prompt).
+    # Trim history to the most recent MAX_HISTORY messages.
     history = conversations[buddy]
     if len(history) > MAX_HISTORY + 1:
         conversations[buddy] = [history[0]] + history[-(MAX_HISTORY):]
