@@ -163,7 +163,7 @@ def sanitize_message(text):
     """
     for emoji, emoticon in EMOJI_MAP.items():
         # BUGFIX: Undefined emoticons should appear as unicode spaces.
-        if emoticon = "":
+        if emoticon == "":
             emoticon = " "
         text = text.replace(emoji, emoticon)
     return text.encode("ascii", "ignore").decode("ascii")
