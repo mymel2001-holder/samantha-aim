@@ -179,13 +179,13 @@ def generate_reply(ollama_client, model, buddy, message):
     if buddy not in conversations:
         conversations[buddy] = [""]
 
-    if (buddy == "nodemixaholic" or buddy == "sparksammy") {
+    if (buddy == "nodemixaholic" or buddy == "sparksammy"):
         buddyName = `Sammy Lord (Username: ${buddy})`
-    }
 
     # Append the incoming user message.
-    conversations[buddy].append({"role": "user", "content": `Reminders: ${BOT_INITIAL_REMINDERS}
-    Reply to the following message \from ${buddyName}: ${message}`})
+    conversations[buddy].append({"role": "user", "content": f"""Reminders: ${BOT_INITIAL_REMINDERS}
+    Reply to the following message 
+    from ${buddyName}: ${message}"""})
 
     # Trim history to the most recent MAX_HISTORY messages (keep system prompt).
     history = conversations[buddy]
