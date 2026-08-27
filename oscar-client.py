@@ -51,6 +51,121 @@ def log_chat(text):
         f.write(f"[{timestamp}] {text}\n")
 
 
+# Map common emojis to text-based emoticons. Keys are the emoji characters;
+# values are the AIM-style emoticon to substitute.
+EMOJI_MAP = {
+    "😀": ":)",
+    "😃": ":)",
+    "😄": ":)",
+    "😁": ":D",
+    "😆": ":D",
+    "😅": ":')",
+    "😂": ":')",
+    "🤣": ":')",
+    "🙂": ":)",
+    "🙃": ":)",
+    "😉": ";)",
+    "😊": ":)",
+    "😇": "O:)",
+    "😍": ":*",
+    "😘": ":*",
+    "😗": ":*",
+    "😋": ":P",
+    "😛": ":P",
+    "😜": ";P",
+    "😝": ":P",
+    "🤪": ";P",
+    "🤔": ":?",
+    "🤨": ":?",
+    "😐": ":|",
+    "😑": ":|",
+    "😶": ":|",
+    "😏": ";)",
+    "😒": ":-/",
+    "😞": ":(",
+    "😟": ":(",
+    "😠": ">:(",
+    "😡": ">:(",
+    "😢": ":'(",
+    "😭": ":'(",
+    "😤": ">:(",
+    "😳": ":$",
+    "😱": ":O",
+    "😨": ":O",
+    "😰": ":O",
+    "😥": ":'(",
+    "😓": ":'(",
+    "😩": ":/",
+    "😫": ":/",
+    "😬": ":|",
+    "😷": ":-X",
+    "🤒": ":-X",
+    "🤕": ":-X",
+    "🤗": ":)",
+    "🤩": ":D",
+    "🥳": ":D",
+    "😎": "8)",
+    "🤓": "8)",
+    "🧐": ":?",
+    "😴": "|-)",
+    "😪": "|-)",
+    "😈": ">:)",
+    "👿": ">:(",
+    "💀": "X(",
+    "👻": "O:)",
+    "🤖": ":-S",
+    "👍": "(y)",
+    "👎": "(n)",
+    "👏": ":-D",
+    "🙌": ":-D",
+    "🙏": ":-)",
+    "💪": ":-B",
+    "👌": "OK",
+    "✌️": "V",
+    "🤝": ":-)",
+    "❤️": "<3",
+    "💖": "<3",
+    "💕": "<3",
+    "💗": "<3",
+    "💓": "<3",
+    "💔": "</3",
+    "💯": "100",
+    "✨": "*~*",
+    "⭐": "*",
+    "🌟": "*",
+    "🔥": "~",
+    "🎉": ":-D",
+    "🎊": ":-D",
+    "🎁": ":-)",
+    "🎂": ":-)",
+    "🍕": ":-P",
+    "☕": ":-)",
+    "😺": ":)",
+    "😸": ":)",
+    "😹": ":')",
+    "😻": ":*",
+    "😼": ";)",
+    "😽": ":*",
+    "🙀": ":O",
+    "😿": ":'(",
+    "😾": ">:(",
+}
+
+
+def sanitize_message(text):
+    """Convert emojis to text emoticons and strip remaining non-ASCII chars.
+
+    aimpyfly's send_message computes packet lengths with len() (character
+    count), which breaks when a message contains multi-byte UTF-8 characters
+    like emoji. We first replace known emojis with ASCII emoticons, then drop
+    any remaining non-ASCII characters so the wire format stays byte-accurate
+    and the server actually delivers the message.
+    """
+    for emoji, emoticon in EMOJI_MAP.items():
+        text = text.replace(emoji, emoticon)
+    return text.encode("ascii", "ignore").decode("ascii")
+
+
 def get_ollama_client(endpoint):
     """Return an ollama client, defaulting to the local server."""
     if endpoint:
@@ -105,9 +220,10 @@ async def message_received(sender, message):
         current_time = time.time()
         last_reply_time = responded_buddies.get(sender, 0)
         if (current_time - last_reply_time) > AUTO_REPLY_COOLDOWN:
-            await current_client.send_message(sender, f"[Auto-Reply] {away_message}")
+            away_reply = sanitize_message(f"[Auto-Reply] {away_message}")
+            await current_client.send_message(sender, away_reply)
             responded_buddies[sender] = current_time
-            log_chat(f"Auto-Replied to {sender}: {away_message}")
+            log_chat(f"Auto-Replied to {sender}: {away_reply}")
         return
 
     # 3. Otherwise, generate an AI reply via Ollama.
@@ -117,8 +233,10 @@ async def message_received(sender, message):
         None, generate_reply, ollama_client, model, sender, message
     )
 
-    await current_client.send_message(sender, reply)
-    log_chat(f"Samantha to {sender}: {reply}")
+    # Sanitize to ASCII so OSCAR length fields stay byte-accurate.
+    safe_reply = sanitize_message(reply)
+    await current_client.send_message(sender, safe_reply)
+    log_chat(f"Samantha to {sender}: {safe_reply}")
 
     # Visual cleanup
     sys.stdout.write("\033[F\033[K")
